@@ -1,4 +1,5 @@
 import "./App.css";
+import GameBoard from "./components/GameBoard.tsx";
 import Player from "./components/Player.tsx";
 
 function App() {
@@ -9,7 +10,7 @@ function App() {
           <Player intialName='Player 1' symbol='X' score={0} />
           <Player intialName='Player 2' symbol='O' score={0} />
         </ol>
-        Game Board
+        <GameBoard />
       </div>
     </main>
   );
