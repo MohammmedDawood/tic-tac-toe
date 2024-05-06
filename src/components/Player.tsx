@@ -14,11 +14,8 @@ function Player({ intialName, symbol, score }: PlayerProps) {
     setIsEditing((prevIsEditing) => !prevIsEditing);
   }
 
-  function handleSaveClick() {
-    const input = document.querySelector("input") as HTMLInputElement;
-    const newName = input.value;
-    setPlayerName(newName);
-    setIsEditing(false);
+  function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setPlayerName(event.target.value);
   }
 
   let editableplayerName = (
@@ -27,7 +24,12 @@ function Player({ intialName, symbol, score }: PlayerProps) {
 
   if (isEditing) {
     editableplayerName = (
-      <input type='text' required defaultValue={playerName} />
+      <input
+        type='text'
+        required
+        value={playerName}
+        onChange={handleInputChange}
+      />
     );
   }
 
