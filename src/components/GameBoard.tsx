@@ -1,17 +1,43 @@
+import { useState } from "react";
+
 const intialGameBoard = [
   [" ", " ", " "],
   [" ", " ", " "],
   [" ", " ", " "],
 ];
+
 function GameBoard() {
+  const [gameBoard, setGameBoard] = useState<string[][]>(intialGameBoard);
+
+  function handleCellClick(
+    rowIndex: number,
+    colIndex: number,
+    playerSymbol: string
+  ) {
+    setGameBoard((prevGameBoard) => {
+      const updatedBoard = [
+        ...prevGameBoard.map((innerArray) => [...innerArray]),
+      ];
+      updatedBoard[rowIndex][colIndex] = playerSymbol;
+      return updatedBoard;
+    });
+  }
+
   return (
     <ol id='game-board'>
-      {intialGameBoard.map((row, rowIndex) => (
+      {gameBoard.map((row, rowIndex) => (
         <li key={rowIndex}>
           <ol>
-            {row.map((playerSymbol, cellIndex) => (
-              <li key={cellIndex}>
-                <button className='cell'>{playerSymbol}</button>
+            {row.map((playerSymbol, colIndex) => (
+              <li key={colIndex}>
+                <button
+                  className='cell'
+                  onClick={() =>
+                    handleCellClick(rowIndex, colIndex, playerSymbol)
+                  }
+                >
+                  {playerSymbol}
+                </button>
               </li>
             ))}
           </ol>
