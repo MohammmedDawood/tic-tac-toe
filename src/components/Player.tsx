@@ -4,9 +4,10 @@ interface PlayerProps {
   intialName: string;
   symbol: string;
   score: number;
+  isActive?: boolean;
 }
 
-function Player({ intialName, symbol, score }: PlayerProps) {
+function Player({ intialName, symbol, score, isActive }: PlayerProps) {
   const [playerName, setPlayerName] = useState<string>(intialName);
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
@@ -34,7 +35,7 @@ function Player({ intialName, symbol, score }: PlayerProps) {
   }
 
   return (
-    <li>
+    <li className={isActive ? "active" : undefined}>
       <span className='player'>
         {editableplayerName}
         <span className='player-symbol'>{symbol ? symbol : "X"}</span>

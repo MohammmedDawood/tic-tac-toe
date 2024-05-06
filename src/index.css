@@ -80,7 +80,8 @@ h1 {
 }
 
 #players.highlight-player li.active .player-name,
-#players.highlight-player li.active .player-symbol {
+#players.highlight-player li.active .player-symbol,
+#players.highlight-player li.active .player-score {
   color: #f6e35a;
 }
 

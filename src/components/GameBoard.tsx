@@ -6,7 +6,14 @@ const intialGameBoard = [
   [" ", " ", " "],
 ];
 
-function GameBoard() {
+interface GameBoardProps {
+  handleSelectCellChange: () => void;
+  activePlayerSymbol: string;
+}
+function GameBoard({
+  handleSelectCellChange,
+  activePlayerSymbol,
+}: GameBoardProps) {
   const [gameBoard, setGameBoard] = useState<string[][]>(intialGameBoard);
 
   function handleCellClick(
@@ -21,6 +28,7 @@ function GameBoard() {
       updatedBoard[rowIndex][colIndex] = playerSymbol;
       return updatedBoard;
     });
+    handleSelectCellChange();
   }
 
   return (
@@ -33,7 +41,7 @@ function GameBoard() {
                 <button
                   className='cell'
                   onClick={() =>
-                    handleCellClick(rowIndex, colIndex, playerSymbol)
+                    handleCellClick(rowIndex, colIndex, activePlayerSymbol)
                   }
                 >
                   {playerSymbol}
