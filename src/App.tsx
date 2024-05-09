@@ -4,6 +4,7 @@ import GameBoard from "./components/GameBoard.tsx";
 import Player from "./components/Player.tsx";
 import Log from "./components/Log.tsx";
 import { WINNING_COBINATION } from "./winning-cmbinations.tsx";
+import GameOver from "./components/GameOver.tsx";
 
 const intialGameBoard = [
   [" ", " ", " "],
@@ -30,7 +31,7 @@ function App() {
   const activePlayer = getActivePlayer(gameTurns);
 
   // intialized game board
-  let gameBoard = intialGameBoard;
+  let gameBoard = [...intialGameBoard.map((row) => [...row])];
 
   for (const turn of gameTurns) {
     const { square, player } = turn;
@@ -57,6 +58,9 @@ function App() {
     }
   }
 
+  // check for draw
+  const hasDraw: boolean = gameTurns.length === 9 && !winner;
+
   function onSelectSquare(rowIndex: number, colIndex: number) {
     setGameTurns((prevTurns) => {
       const currentPlayer = getActivePlayer(prevTurns);
@@ -73,6 +77,13 @@ function App() {
       return updatedTurns;
     });
   }
+
+  // reset game
+  function resetGame() {
+    setGameTurns([]);
+  }
+
+  // handle player name change and score
 
   return (
     <main>
@@ -91,7 +102,9 @@ function App() {
             isActive={activePlayer === "O"}
           />
         </ol>
-        {winner && <h1>{winner ? `Player ${winner} wins!` : "Tic Tac Toe"}</h1>}
+        {(winner || hasDraw) && (
+          <GameOver winner={winner} resetGame={resetGame} />
+        )}
         <GameBoard onSelectSquare={onSelectSquare} gameBoard={gameBoard} />
       </div>
       <Log turns={gameTurns} />
