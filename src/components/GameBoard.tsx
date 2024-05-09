@@ -1,22 +1,8 @@
-const intialGameBoard = [
-  [" ", " ", " "],
-  [" ", " ", " "],
-  [" ", " ", " "],
-];
-
 interface GameBoardProps {
   onSelectSquare: (rowIndex: number, colIndex: number) => void;
-  turns: { square: { row: number; col: number }; player: string }[];
+  gameBoard: string[][];
 }
-function GameBoard({ onSelectSquare, turns }: GameBoardProps) {
-  let gameBoard = intialGameBoard;
-
-  for (const turn of turns) {
-    const { square, player } = turn;
-    const { row, col } = square;
-    gameBoard[row][col] = player;
-  }
-
+function GameBoard({ onSelectSquare, gameBoard }: GameBoardProps) {
   return (
     <ol id='game-board'>
       {gameBoard.map((row, rowIndex) => (
