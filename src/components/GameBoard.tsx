@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-
 const intialGameBoard = [
   [" ", " ", " "],
   [" ", " ", " "],
@@ -29,6 +27,7 @@ function GameBoard({ onSelectSquare, turns }: GameBoardProps) {
                 <button
                   className='cell'
                   onClick={() => onSelectSquare(rowIndex, colIndex)}
+                  disabled={playerSymbol !== " "}
                 >
                   {playerSymbol}
                 </button>

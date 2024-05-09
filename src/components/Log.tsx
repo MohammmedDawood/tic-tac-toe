@@ -6,8 +6,6 @@ interface LogProps {
 }
 
 function Log({ turns }: LogProps) {
-  console.log(turns);
-
   return (
     <ol id='log'>
       {turns?.map((turn, index) => {
