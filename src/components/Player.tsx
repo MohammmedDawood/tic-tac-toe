@@ -5,14 +5,24 @@ interface PlayerProps {
   symbol: string;
   score: number;
   isActive?: boolean;
+  onNameChange?: (playerSymbol: string, playerName: string) => void;
 }
 
-function Player({ intialName, symbol, score, isActive }: PlayerProps) {
+function Player({
+  intialName,
+  symbol,
+  score,
+  isActive,
+  onNameChange,
+}: PlayerProps) {
   const [playerName, setPlayerName] = useState<string>(intialName);
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
   function handleEditClick() {
     setIsEditing((prevIsEditing) => !prevIsEditing);
+    if (isEditing && onNameChange) {
+      onNameChange(symbol, playerName);
+    }
   }
 
   function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {

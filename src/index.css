@@ -121,6 +121,13 @@ h1 {
   text-align: center;
 }
 
+.winner-name {
+  text-transform: uppercase;
+  font-family: "Caprasimo", cursive;
+  color: #fcd256;
+  animation: pop-in 2s infinite;
+}
+
 .player input {
   font: inherit;
   font-size: 1rem;

@@ -12,10 +12,20 @@ const intialGameBoard = [
   [" ", " ", " "],
 ];
 
+// interfaces
 interface ITurns {
   square: { row: number; col: number };
   player: string;
 }
+
+interface IPlayer {
+  [key: string]: {
+    name: string;
+    score: number;
+  };
+}
+
+interface IPlayers extends Array<IPlayer> {}
 
 // getActivePlayer function
 function getActivePlayer(turns: ITurns[]) {
@@ -27,6 +37,11 @@ function getActivePlayer(turns: ITurns[]) {
 }
 
 function App() {
+  const [players, setPlayers] = useState<IPlayers>([
+    { X: { name: "Player 1", score: 0 } },
+    { O: { name: "Player 2", score: 0 } },
+  ]);
+
   const [gameTurns, setGameTurns] = useState<ITurns[]>([]);
   const activePlayer = getActivePlayer(gameTurns);
 
@@ -54,7 +69,13 @@ function App() {
       firstSquareSymbol === thirdSquareSymbol &&
       firstSquareSymbol !== " "
     ) {
-      winner = firstSquareSymbol;
+      // return winner Name
+      const winningPlayer = players?.find(
+        (player) => player[firstSquareSymbol]
+      );
+      if (winningPlayer) {
+        winner = winningPlayer[firstSquareSymbol]?.name;
+      }
     }
   }
 
@@ -84,23 +105,41 @@ function App() {
   }
 
   // handle player name change and score
+  function handlePlayerNameChange(playerSymbol: string, playerName: string) {
+    setPlayers((prevPlayers) => {
+      const updatedPlayers = prevPlayers.map((player) => {
+        if (player[playerSymbol]) {
+          return {
+            [playerSymbol]: {
+              name: playerName,
+              score: player[playerSymbol].score,
+            },
+          };
+        }
+        return player;
+      });
+      return updatedPlayers;
+    });
+  }
 
   return (
     <main>
       <div id='game-container'>
         <ol id='players' className='highlight-player'>
-          <Player
-            intialName='Player 1'
-            symbol='X'
-            score={0}
-            isActive={activePlayer === "X"}
-          />
-          <Player
-            intialName='Player 2'
-            symbol='O'
-            score={0}
-            isActive={activePlayer === "O"}
-          />
+          {players.map((player, index) => {
+            const playerSymbol = index === 0 ? "X" : "O";
+            const { name, score } = player[playerSymbol];
+            return (
+              <Player
+                key={playerSymbol}
+                symbol={playerSymbol}
+                intialName={name}
+                score={score}
+                isActive={playerSymbol === activePlayer}
+                onNameChange={handlePlayerNameChange}
+              />
+            );
+          })}
         </ol>
         {(winner || hasDraw) && (
           <GameOver winner={winner} resetGame={resetGame} />
