@@ -2,16 +2,43 @@ import { useState } from "react";
 import "./App.css";
 import GameBoard from "./components/GameBoard.tsx";
 import Player from "./components/Player.tsx";
+import Log from "./components/Log.tsx";
 
 function App() {
   const [activePlayer, setActivePlayer] = useState<string>("X");
+  const [gameTurns, setGameTurns] = useState<
+    {
+      square: { row: number; col: number };
+      player: string;
+    }[]
+  >([]);
 
-  function handleSelectCellChange() {
-    console.log("handleSelectCellChange");
-
+  function onSelectSquare(rowIndex: number, colIndex: number) {
     setActivePlayer((prevActivePlayer) =>
       prevActivePlayer === "X" ? "O" : "X"
     );
+
+    setGameTurns((prevTurns) => {
+      let currentPlayer = "X";
+      if (prevTurns && prevTurns.length > 0 && prevTurns[0].player === "X") {
+        currentPlayer = "O";
+      }
+      console.log(
+        `Player ${currentPlayer} selected square at row ${rowIndex} and col ${colIndex}`
+      );
+
+      const updatedTurns = [
+        {
+          square: {
+            row: rowIndex,
+            col: colIndex,
+          },
+          player: currentPlayer,
+        },
+        ...prevTurns,
+      ];
+      return updatedTurns;
+    });
   }
 
   return (
@@ -31,11 +58,9 @@ function App() {
             isActive={activePlayer === "O"}
           />
         </ol>
-        <GameBoard
-          handleSelectCellChange={handleSelectCellChange}
-          activePlayerSymbol={activePlayer}
-        />
+        <GameBoard onSelectSquare={onSelectSquare} turns={gameTurns} />
       </div>
+      <Log turns={gameTurns} />
     </main>
   );
 }

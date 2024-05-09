@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const intialGameBoard = [
   [" ", " ", " "],
@@ -7,28 +7,16 @@ const intialGameBoard = [
 ];
 
 interface GameBoardProps {
-  handleSelectCellChange: () => void;
-  activePlayerSymbol: string;
+  onSelectSquare: (rowIndex: number, colIndex: number) => void;
+  turns: { square: { row: number; col: number }; player: string }[];
 }
-function GameBoard({
-  handleSelectCellChange,
-  activePlayerSymbol,
-}: GameBoardProps) {
-  const [gameBoard, setGameBoard] = useState<string[][]>(intialGameBoard);
+function GameBoard({ onSelectSquare, turns }: GameBoardProps) {
+  let gameBoard = intialGameBoard;
 
-  function handleCellClick(
-    rowIndex: number,
-    colIndex: number,
-    playerSymbol: string
-  ) {
-    setGameBoard((prevGameBoard) => {
-      const updatedBoard = [
-        ...prevGameBoard.map((innerArray) => [...innerArray]),
-      ];
-      updatedBoard[rowIndex][colIndex] = playerSymbol;
-      return updatedBoard;
-    });
-    handleSelectCellChange();
+  for (const turn of turns) {
+    const { square, player } = turn;
+    const { row, col } = square;
+    gameBoard[row][col] = player;
   }
 
   return (
@@ -40,9 +28,7 @@ function GameBoard({
               <li key={colIndex}>
                 <button
                   className='cell'
-                  onClick={() =>
-                    handleCellClick(rowIndex, colIndex, activePlayerSymbol)
-                  }
+                  onClick={() => onSelectSquare(rowIndex, colIndex)}
                 >
                   {playerSymbol}
                 </button>
