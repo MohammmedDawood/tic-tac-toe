@@ -4,29 +4,26 @@ import GameBoard from "./components/GameBoard.tsx";
 import Player from "./components/Player.tsx";
 import Log from "./components/Log.tsx";
 
+interface ITurns {
+  square: { row: number; col: number };
+  player: string;
+}
+
+function getActivePlayer(turns: ITurns[]) {
+  let currentPlayer = "X";
+  if (turns && turns.length > 0 && turns[0].player === "X") {
+    currentPlayer = "O";
+  }
+  return currentPlayer;
+}
+
 function App() {
-  const [activePlayer, setActivePlayer] = useState<string>("X");
-  const [gameTurns, setGameTurns] = useState<
-    {
-      square: { row: number; col: number };
-      player: string;
-    }[]
-  >([]);
+  const [gameTurns, setGameTurns] = useState<ITurns[]>([]);
+  const activePlayer = getActivePlayer(gameTurns);
 
   function onSelectSquare(rowIndex: number, colIndex: number) {
-    setActivePlayer((prevActivePlayer) =>
-      prevActivePlayer === "X" ? "O" : "X"
-    );
-
     setGameTurns((prevTurns) => {
-      let currentPlayer = "X";
-      if (prevTurns && prevTurns.length > 0 && prevTurns[0].player === "X") {
-        currentPlayer = "O";
-      }
-      console.log(
-        `Player ${currentPlayer} selected square at row ${rowIndex} and col ${colIndex}`
-      );
-
+      const currentPlayer = getActivePlayer(prevTurns);
       const updatedTurns = [
         {
           square: {
