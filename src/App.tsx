@@ -6,13 +6,13 @@ import Log from "./components/Log.tsx";
 import { WINNING_COBINATION } from "./winning-cmbinations.tsx";
 import GameOver from "./components/GameOver.tsx";
 
-const intialGameBoard = [
+const INITIAL_GAME_BOARD = [
   [" ", " ", " "],
   [" ", " ", " "],
   [" ", " ", " "],
 ];
 
-// interfaces
+/* ------------------ Interfaces ------------------ */
 interface ITurns {
   square: { row: number; col: number };
   player: string;
@@ -27,6 +27,34 @@ interface IPlayer {
 
 interface IPlayers extends Array<IPlayer> {}
 
+const PLAYERS: IPlayers = [
+  {
+    X: {
+      name: "Player 1",
+      score: 0,
+    },
+  },
+  {
+    O: {
+      name: "Player 2",
+      score: 0,
+    },
+  },
+];
+
+/* ------------------ Helper Functions ------------------ */
+// intialized game board
+function initializeGameBoard(gameTurns: ITurns[]) {
+  let gameBoard = [...INITIAL_GAME_BOARD.map((row) => [...row])];
+
+  for (const turn of gameTurns) {
+    const { square, player } = turn;
+    const { row, col } = square;
+    gameBoard[row][col] = player;
+  }
+  return gameBoard;
+}
+
 // getActivePlayer function
 function getActivePlayer(turns: ITurns[]) {
   let currentPlayer = "X";
@@ -36,25 +64,8 @@ function getActivePlayer(turns: ITurns[]) {
   return currentPlayer;
 }
 
-function App() {
-  const [players, setPlayers] = useState<IPlayers>([
-    { X: { name: "Player 1", score: 0 } },
-    { O: { name: "Player 2", score: 0 } },
-  ]);
-
-  const [gameTurns, setGameTurns] = useState<ITurns[]>([]);
-  const activePlayer = getActivePlayer(gameTurns);
-
-  // intialized game board
-  let gameBoard = [...intialGameBoard.map((row) => [...row])];
-
-  for (const turn of gameTurns) {
-    const { square, player } = turn;
-    const { row, col } = square;
-    gameBoard[row][col] = player;
-  }
-
-  // check for winning combination
+// check for winning combination
+function checkWinner(gameBoard: string[][], players: IPlayers) {
   let winner: string = "";
   for (const combination of WINNING_COBINATION) {
     const [first, second, third] = combination;
@@ -78,7 +89,24 @@ function App() {
       }
     }
   }
+  return winner;
+}
 
+/* ------------------ App Component ------------------ */
+
+function App() {
+  const [players, setPlayers] = useState<IPlayers>(PLAYERS);
+  const [gameTurns, setGameTurns] = useState<ITurns[]>([]);
+
+  players.map((player, index) => {
+    console.log(player, index);
+  });
+  // initialize game board
+  const gameBoard = initializeGameBoard(gameTurns);
+  // get active player
+  const activePlayer = getActivePlayer(gameTurns);
+  // check for winner
+  const winner = checkWinner(gameBoard, players);
   // check for draw
   const hasDraw: boolean = gameTurns.length === 9 && !winner;
 
@@ -102,6 +130,21 @@ function App() {
   // reset game
   function resetGame() {
     setGameTurns([]);
+    // if (winner) {
+    //   setPlayers((prevPlayers) => {
+    //     const updatedPlayers = prevPlayers.map((player) => {
+    //       const playerSymbol = winner === player.X?.name ? "X" : "O";
+
+    //       return {
+    //         [playerSymbol]: {
+    //           name: player[playerSymbol]?.name,
+    //           score: player[playerSymbol]?.score + 1,
+    //         },
+    //       };
+    //     });
+    //     return updatedPlayers;
+    //   });
+    // }
   }
 
   // handle player name change and score
@@ -112,7 +155,7 @@ function App() {
           return {
             [playerSymbol]: {
               name: playerName,
-              score: player[playerSymbol].score,
+              score: player[playerSymbol]?.score,
             },
           };
         }
@@ -127,11 +170,11 @@ function App() {
       <div id='game-container'>
         <ol id='players' className='highlight-player'>
           {players.map((player, index) => {
-            const playerSymbol = index === 0 ? "X" : "O";
-            const { name, score } = player[playerSymbol];
+            const playerSymbol = Object.keys(player)[0];
+            const { name, score } = player[playerSymbol]!;
             return (
               <Player
-                key={playerSymbol}
+                key={playerSymbol + index}
                 symbol={playerSymbol}
                 intialName={name}
                 score={score}
