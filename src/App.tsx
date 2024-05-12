@@ -18,29 +18,23 @@ interface ITurns {
   player: string;
 }
 
-interface IPlayer {
+interface IPlayers {
   [key: string]: {
     name: string;
     score: number;
   };
 }
 
-interface IPlayers extends Array<IPlayer> {}
-
-const PLAYERS: IPlayers = [
-  {
-    X: {
-      name: "Player 1",
-      score: 0,
-    },
+const PLAYERS: IPlayers = {
+  X: {
+    name: "Player 1",
+    score: 0,
   },
-  {
-    O: {
-      name: "Player 2",
-      score: 0,
-    },
+  O: {
+    name: "Player 2",
+    score: 0,
   },
-];
+};
 
 /* ------------------ Helper Functions ------------------ */
 // intialized game board
@@ -81,11 +75,9 @@ function checkWinner(gameBoard: string[][], players: IPlayers) {
       firstSquareSymbol !== " "
     ) {
       // return winner Name
-      const winningPlayer = players?.find(
-        (player) => player[firstSquareSymbol]
-      );
+      const winningPlayer = players[firstSquareSymbol]?.name;
       if (winningPlayer) {
-        winner = winningPlayer[firstSquareSymbol]?.name;
+        winner = firstSquareSymbol;
       }
     }
   }
@@ -98,9 +90,6 @@ function App() {
   const [players, setPlayers] = useState<IPlayers>(PLAYERS);
   const [gameTurns, setGameTurns] = useState<ITurns[]>([]);
 
-  players.map((player, index) => {
-    console.log(player, index);
-  });
   // initialize game board
   const gameBoard = initializeGameBoard(gameTurns);
   // get active player
@@ -130,37 +119,30 @@ function App() {
   // reset game
   function resetGame() {
     setGameTurns([]);
-    // if (winner) {
-    //   setPlayers((prevPlayers) => {
-    //     const updatedPlayers = prevPlayers.map((player) => {
-    //       const playerSymbol = winner === player.X?.name ? "X" : "O";
-
-    //       return {
-    //         [playerSymbol]: {
-    //           name: player[playerSymbol]?.name,
-    //           score: player[playerSymbol]?.score + 1,
-    //         },
-    //       };
-    //     });
-    //     return updatedPlayers;
-    //   });
-    // }
+    if (winner) {
+      setPlayers((prevPlayers) => {
+        const updatedPlayers = {
+          ...prevPlayers,
+          [winner]: {
+            name: prevPlayers[winner].name,
+            score: prevPlayers[winner].score + 1,
+          },
+        };
+        return updatedPlayers;
+      });
+    }
   }
 
   // handle player name change and score
   function handlePlayerNameChange(playerSymbol: string, playerName: string) {
     setPlayers((prevPlayers) => {
-      const updatedPlayers = prevPlayers.map((player) => {
-        if (player[playerSymbol]) {
-          return {
-            [playerSymbol]: {
-              name: playerName,
-              score: player[playerSymbol]?.score,
-            },
-          };
-        }
-        return player;
-      });
+      const updatedPlayers = {
+        ...prevPlayers,
+        [playerSymbol]: {
+          name: playerName,
+          score: prevPlayers[playerSymbol].score,
+        },
+      };
       return updatedPlayers;
     });
   }
@@ -169,7 +151,7 @@ function App() {
     <main>
       <div id='game-container'>
         <ol id='players' className='highlight-player'>
-          {players.map((player, index) => {
+          {/* {players.map((player, index) => {
             const playerSymbol = Object.keys(player)[0];
             const { name, score } = player[playerSymbol]!;
             return (
@@ -182,10 +164,26 @@ function App() {
                 onNameChange={handlePlayerNameChange}
               />
             );
+          })} */}
+          {Object.keys(players).map((playerSymbol) => {
+            const { name, score } = players[playerSymbol];
+            return (
+              <Player
+                key={playerSymbol}
+                symbol={playerSymbol}
+                intialName={name}
+                score={score}
+                isActive={playerSymbol === activePlayer}
+                onNameChange={handlePlayerNameChange}
+              />
+            );
           })}
         </ol>
         {(winner || hasDraw) && (
-          <GameOver winner={winner} resetGame={resetGame} />
+          <GameOver
+            winner={winner ? players[winner].name : ""}
+            resetGame={resetGame}
+          />
         )}
         <GameBoard onSelectSquare={onSelectSquare} gameBoard={gameBoard} />
       </div>
